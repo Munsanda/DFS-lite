@@ -1,0 +1,100 @@
+version: '3.4'
+
+networks:
+  backend:
+
+services:
+  db1: 
+    container_name: db1
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    deploy:
+     resources:
+      limits:
+        memory: 2GB
+    environment: 
+       - ACCEPT_EULA=Y
+       - SA_PASSWORD=password12345#
+    networks:
+       - backend
+    ports:
+       - 5001:1433
+
+  dfs:
+    image: ${DOCKER_REGISTRY-}dfs
+    build:
+      context: .
+      dockerfile: DFS/Dockerfile
+    depends_on: 
+      - db1
+    ports:
+      - 7000:80
+    environment:
+      - DB_HOST=db1,1433
+      - DB_NAME=db
+      - DB_SA_PASSWORD=password12345#
+    networks:
+      - backend
+
+  db2: 
+    container_name: db2
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    deploy:
+     resources:
+      limits:
+        memory: 2GB
+    environment: 
+       - ACCEPT_EULA=Y
+       - SA_PASSWORD=password12345#
+    networks:
+       - backend
+    ports:
+       - 8001:1433
+
+  dfs2:
+    image: ${DOCKER_REGISTRY-}dfs
+    build:
+      context: .
+      dockerfile: DFS/Dockerfile
+    depends_on: 
+      - db2
+    ports:
+      - 8002:80
+    environment:
+      - DB_HOST=db2,1433
+      - DB_NAME=db
+      - DB_SA_PASSWORD=password12345#
+    networks:
+      - backend
+
+  db3: 
+    container_name: db3
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    deploy:
+     resources:
+      limits:
+        memory: 2GB
+    environment: 
+       - ACCEPT_EULA=Y
+       - SA_PASSWORD=password12345#
+    networks:
+       - backend
+    ports:
+       - 7001:1433
+
+  dfs3:
+    image: ${DOCKER_REGISTRY-}dfs
+    build:
+      context: .
+      dockerfile: DFS/Dockerfile
+    depends_on: 
+      - db3
+    ports:
+      - 7002:80
+    environment:
+      - DB_HOST=db3,1433
+      - DB_NAME=db
+      - DB_SA_PASSWORD=password12345#
+    networks:
+      - backend
+
+
